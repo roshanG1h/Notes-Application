@@ -5,6 +5,10 @@ function NoteForm({ fetchNotes, editingNote, setEditingNote }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  // Backend API URL
+  const API_URL =
+    "https://notes-application-bg4g.onrender.com/api/notes";
+
   useEffect(() => {
     if (editingNote) {
       setTitle(editingNote.title);
@@ -15,15 +19,17 @@ function NoteForm({ fetchNotes, editingNote, setEditingNote }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validation
     if (!title || !content) {
       alert("All fields required");
       return;
     }
 
     try {
+      // UPDATE NOTE
       if (editingNote) {
         await axios.put(
-          `http://localhost:5000/api/notes/${editingNote.id}`,
+          `${API_URL}/${editingNote.id}`,
           {
             title,
             content,
@@ -31,19 +37,25 @@ function NoteForm({ fetchNotes, editingNote, setEditingNote }) {
         );
 
         setEditingNote(null);
-      } else {
-        await axios.post("http://localhost:5000/api/notes", {
+      }
+
+      // CREATE NOTE
+      else {
+        await axios.post(API_URL, {
           title,
           content,
         });
       }
 
+      // Clear form
       setTitle("");
       setContent("");
 
+      // Refresh notes
       fetchNotes();
     } catch (error) {
-      console.log(error);
+      console.log("Error:", error);
+      alert("Something went wrong");
     }
   };
 
